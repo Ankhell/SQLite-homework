@@ -1,36 +1,29 @@
 package ru.ankhell.sql_learn.sql;
 
-import java.sql.*;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 import static ru.ankhell.sql_learn.SQLprocessing.*;
 
 public class SQLiteConnection {
-    public static Connection connect(String url) {
-        Connection conn = null;
-        try {
-            // db parameters
-            url = "jdbc:sqlite:" + url;
-            // create a connection to the database
-            conn = DriverManager.getConnection(url);
+    public static Connection connect(String url) throws SQLException {
+        Connection conn;
+        url = "jdbc:sqlite:" + url;
+        conn = DriverManager.getConnection(url);
 
-            if (DEBUG) System.out.println("(DEBUG) Connection to SQLiteDB has been established.");
+        if (debug) System.out.println("(DEBUG) Connection to SQLiteDB has been established.");
 
-            return conn;
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
+        return conn;
     }
-    public static void close(Connection conn){
-        if (conn != null){
-            try {
-                conn.close();
-            } catch (SQLException e){
-                System.out.println(e.getMessage());
-            }
-            if (DEBUG) System.out.println("(DEBUG) Connection to SQLiteDB closed.");
+
+    public static void close(Connection conn) throws SQLException {
+        if (conn != null) {
+            conn.close();
+            if (debug) System.out.println("(DEBUG) Connection to SQLiteDB closed.");
+        } else {
+            System.out.println("No connection closed! argument is null");
         }
-        else System.out.println("Can't open NULL");
     }
 }
