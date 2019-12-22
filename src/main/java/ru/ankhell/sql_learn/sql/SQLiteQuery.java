@@ -6,21 +6,23 @@ import java.util.Map;
 
 import static ru.ankhell.sql_learn.SQLprocessing.*;
 
-public class SQLQuery {
+public class SQLiteQuery {
     public static HashMap<String, Integer> getColNamesAndWidthByQuery(Connection conn, String sqlQuery) {
         HashMap<String, Integer> colNamesAndWidth = new HashMap<>();
         try (Statement stmt = conn.createStatement();
              ResultSet results = stmt.executeQuery(sqlQuery)) {
             ResultSetMetaData resultSetMeta = results.getMetaData();
             for (int i = 0; i < resultSetMeta.getColumnCount(); i++) {
-                colNamesAndWidth.put(resultSetMeta.getColumnName(i + 1), resultSetMeta.getColumnName(i+1).length());
+                colNamesAndWidth.put(resultSetMeta.getColumnName(i + 1), resultSetMeta.getColumnName(i + 1).length());
             }
             while (results.next()) {
                 for (int i = 0; i < resultSetMeta.getColumnCount(); i++) {
-                    if (colNamesAndWidth.get(resultSetMeta.getColumnName(i + 1)) <
-                            results.getString(resultSetMeta.getColumnName(i + 1)).length()) {
-                        colNamesAndWidth.put(resultSetMeta.getColumnName(i + 1),
-                                results.getString(resultSetMeta.getColumnName(i + 1)).length());
+                    if (results.getString(resultSetMeta.getColumnName(i + 1)) != null) {
+                        if (colNamesAndWidth.get(resultSetMeta.getColumnName(i + 1)) <
+                                results.getString(resultSetMeta.getColumnName(i + 1)).length()) {
+                            colNamesAndWidth.put(resultSetMeta.getColumnName(i + 1),
+                                    results.getString(resultSetMeta.getColumnName(i + 1)).length());
+                        }
                     }
                 }
             }
@@ -37,23 +39,21 @@ public class SQLQuery {
         return null;
     }
 
-    public static HashMap<String, Integer> getAllColNamesAndWidthByTabName(Connection conn,String tabName){
-        return getColNamesAndWidthByQuery(conn,"SELECT * FROM "+tabName);
+    public static HashMap<String, Integer> getAllColNamesAndWidthByTabName(Connection conn, String tabName) {
+        return getColNamesAndWidthByQuery(conn, "SELECT * FROM " + tabName);
     }
 
-    public static ResultSet getQueryResults(Connection conn, String sqlQuery) throws SQLException{
+    public static ResultSet getQueryResults(Connection conn, String sqlQuery) throws SQLException {
         try {
             Statement statement = conn.createStatement();
             ResultSet results = statement.executeQuery(sqlQuery);
             if (DEBUG) System.out.println("(DEBUG) Query executed correctly returning results");
             return results;
-        }
-        catch (SQLException e){
+        } catch (SQLException e) {
             if (DEBUG) {
                 System.out.println("(DEBUG) Warning! returning null!");
                 System.out.println(e.getMessage());
-            }
-            else throw new SQLException(e);
+            } else throw new SQLException(e);
         }
         return null;
     }
